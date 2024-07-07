@@ -1,0 +1,39 @@
+provider "aws" {
+  region = "us-east-1"
+  version = "~> 5.57"
+}
+
+resource "aws_instance" "demo-server" {
+  ami="ami-06c68f701d8090592"
+  instance_type = "t2.micro"
+  key_name = "Demokeypair"
+  security_groups = [ "aws-summer-demo"]
+}
+
+resource "aws_default_security_group" "aws-summer-demo" {
+  #vpc_id = aws_vpc.mainvpc.id
+ name ="aws-summer-demo"
+ description= "ssh access"
+
+  ingress {
+    description = "ssh access"
+    protocol  = "tcp"
+    self      = true
+    from_port = 22
+    to_port   = 22
+    cidr_blocks = [ "0.0.0.0/0" ]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+
+    Name="ssh-instance"
+
+  }
+}
