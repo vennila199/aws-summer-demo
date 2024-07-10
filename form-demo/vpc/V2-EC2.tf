@@ -27,6 +27,15 @@ to_port = 22
 protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
 }
+
+ingress {
+description = "Shh access"
+from_port = 8080
+to_port = 8080
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+}
+
 egress {
 from_port = 0
 to_port = 0
@@ -84,3 +93,15 @@ resource "aws_route_table_association" "Nam-rta-public-subnet-02" {
 subnet_id = aws_subnet.Nam-public-subnet-02.id
 route_table_id = aws_route_table.Nam-public-rt.id
 }
+
+  module "sgs" {
+    source = "../sg_eks"
+    vpc_id     =     aws_vpc.Nam-vpc.id
+ }
+
+  module "eks" {
+       source = "../eks"
+       vpc_id     =     aws_vpc.Nam-vpc.id
+       subnet_ids = [aws_subnet.Nam-public-subnet-01.id,aws_subnet.Nam-public-subnet-02.id]
+       sg_ids = module.sgs.security_group_public
+ }
